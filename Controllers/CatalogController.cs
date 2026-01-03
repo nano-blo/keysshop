@@ -44,11 +44,11 @@ namespace KeysShop.Controllers
 
             return View(games);
         }*/
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             // Временно возвращаем пустой список
-            var emptyList = new List<Game>();
-            return View(emptyList);
+            var games = await _context.Games.ToListAsync();
+            return View(games);
 
             // ИЛИ для теста создаем тестовые данные
             // var testGames = new List<Game>

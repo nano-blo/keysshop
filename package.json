@@ -1,0 +1,19 @@
+{
+  "name": "keysshop",
+  "version": "1.0.0",
+  "description": "KeysShop - магазин игровых ключей",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "pg": "^8.11.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": [ "games", "keys", "shop" ],
+  "author": "Your Name",
+  "license": "MIT"
+}
