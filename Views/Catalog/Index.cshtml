@@ -1,0 +1,97 @@
+﻿@model List<KeysShop.Controllers.CatalogController.GameViewModel>
+
+@{
+    ViewData["Title"] = "Каталог игр";
+}
+
+<h1>🎮 Каталог игр</h1>
+
+<div class="row">
+    @foreach (var game in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card" style="height: 100%;">
+                <!-- Изображение -->
+                @if (!string.IsNullOrEmpty(game.ImageUrl))
+                {
+                    <img src="@game.ImageUrl" class="card-img-top"
+                         alt="@game.Title"
+                         style="height: 200px; object-fit: cover;">
+                }
+                else
+                {
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+                         style="height: 200px;">
+                        <span class="text-white">Нет изображения</span>
+                    </div>
+                }
+
+                <div class="card-body">
+                    <!-- Название -->
+                    <h5 class="card-title">@game.Title</h5>
+
+                    <!-- Разработчик и год -->
+                    <p class="text-muted">
+                        @game.Developer • @game.ReleaseYear
+                    </p>
+
+                    <!-- Жанры -->
+                    @if (game.Genres != null && game.Genres.Any())
+                    {
+                        <div class="mb-2">
+                            @foreach (var genre in game.Genres)
+                            {
+                                <span class="badge bg-info me-1">@genre</span>
+                            }
+                        </div>
+                    }
+
+                    <!-- Описание -->
+                    <p class="card-text">
+                        @if (!string.IsNullOrEmpty(game.Description) && game.Description.Length > 100)
+                        {
+                            @game.Description.Substring(0, 100) <span>...</span>
+                        }
+                        else
+                        {
+                            @game.Description
+                        }
+                    </p>
+
+                    <!-- Ключи и цена -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-success">
+                            Доступно: @game.AvailableKeys
+                        </span>
+
+                        @if (game.Price.HasValue)
+                        {
+                            <span class="h5 text-primary">
+                                @game.Price.Value.ToString("C")
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Цена не указана</span>
+                        }
+                    </div>
+
+                    <!-- Кнопка подробнее -->
+                    <a asp-action="Details" asp-route-id="@game.Id"
+                       class="btn btn-primary w-100 mt-2">
+                        Подробнее
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Если игр нет -->
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        <h4>Игры не найдены</h4>
+        <p>В каталоге пока нет игр с доступными ключами.</p>
+    </div>
+}

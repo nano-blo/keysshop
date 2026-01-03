@@ -1,0 +1,11 @@
+﻿services:
+  - type: web
+    name: keysshop
+    env: dotnet
+    buildCommand: dotnet publish -c Release -o ./publish
+    startCommand: dotnet ./publish/KeysShop.dll
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DOTNET_CLI_TELEMETRY_OPTOUT
+        value: 1kPath: /

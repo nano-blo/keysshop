@@ -1,0 +1,13 @@
+﻿bin/
+obj/
+*.db
+*.sqlite
+appsettings.Development.json
+.vs/
+.vscode/
+*.user
+*.suo
+*.cache
+.DS_Store
+__pycache__/
+*.pyc
