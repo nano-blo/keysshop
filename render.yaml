@@ -1,11 +1,11 @@
 ﻿services:
   - type: web
     name: keysshop
-    env: dotnet
-    buildCommand: dotnet publish -c Release -o ./publish
-    startCommand: dotnet ./publish/KeysShop.dll
+    env: docker
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
-      - key: DOTNET_CLI_TELEMETRY_OPTOUT
-        value: 1kPath: /
+      - key: DATABASE_URL
+        value: postgresql://keysshopdb_user:TXFgDCd1SnDxmEOnjTrR6RZCXSLzjkzq@dpg-d5chq9ili9vc73cibbdg-a.frankfurt-postgres.render.com/keysshopdb
+    plan: free
