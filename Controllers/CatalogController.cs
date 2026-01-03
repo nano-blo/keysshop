@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using KeysShop.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using KeysShop.Models;
 
 namespace KeysShop.Controllers
 {
@@ -16,7 +17,7 @@ namespace KeysShop.Controllers
         }
 
         // GET: /Catalog
-        public async Task<IActionResult> Index()
+        /*public async Task<IActionResult> Index()
         {
             // Получаем игры с жанрами
             var games = await _context.Games
@@ -42,6 +43,20 @@ namespace KeysShop.Controllers
                 .ToListAsync();
 
             return View(games);
+        }*/
+        public IActionResult Index()
+        {
+            // Временно возвращаем пустой список
+            var emptyList = new List<Game>();
+            return View(emptyList);
+
+            // ИЛИ для теста создаем тестовые данные
+            // var testGames = new List<Game>
+            // {
+            //     new Game { Id = 1, название = "Тестовая игра 1", год_выпуска = "2024" },
+            //     new Game { Id = 2, название = "Тестовая игра 2", год_выпуска = "2024" }
+            // };
+            // return View(testGames);
         }
 
         // GET: /Catalog/Details/5 - УПРОЩЕННАЯ ВЕРСИЯ

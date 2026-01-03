@@ -22,28 +22,28 @@ builder.Services.AddControllersWithViews();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? Environment.GetEnvironmentVariable("DATABASE_URL");
 
-if (connectionString != null && connectionString.Contains("postgresql://"))
+// Если строка пустая - используем тестовую
+if (string.IsNullOrEmpty(connectionString))
 {
-    // Конвертация URL Render в строку подключения
-    var databaseUri = new Uri(connectionString);
-    var userInfo = databaseUri.UserInfo.Split(':');
-
-    var builderDb = new NpgsqlConnectionStringBuilder
-    {
-        Host = databaseUri.Host,
-        Port = databaseUri.Port,
-        Username = userInfo[0],
-        Password = userInfo[1],
-        Database = databaseUri.LocalPath.TrimStart('/'),
-        SslMode = SslMode.Require,
-        TrustServerCertificate = true
-    };
-
-    connectionString = builderDb.ToString();
+    connectionString = "Host=localhost;Database=keysshop;Username=postgres;Password=postgres";
+    Console.WriteLine("⚠️ ВНИМАНИЕ: Используется тестовая строка подключения");
+}
+else
+{
+    Console.WriteLine($"✅ Строка подключения получена, длина: {connectionString.Length}");
 }
 
+// Простая и надежная настройка DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+{
+    options.UseNpgsql(connectionString, npgsqlOptions =>
+    {
+        npgsqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 3,
+            maxRetryDelay: TimeSpan.FromSeconds(5),
+            errorCodesToAdd: null);
+    });
+});
 
 var app = builder.Build();
 
@@ -58,5 +58,22 @@ app.MapControllerRoute(
     pattern: "{controller=Catalog}/{action=Index}/{id?}");
 
 app.Urls.Add("http://0.0.0.0:" + (Environment.GetEnvironmentVariable("PORT") ?? "5000"));
+
+// Простой health check
+app.MapGet("/health", () =>
+{
+    var dbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+    return Results.Json(new
+    {
+        status = "running",
+        timestamp = DateTime.UtcNow,
+        database_configured = dbUrl != null,
+        database_url_length = dbUrl?.Length ?? 0,
+        environment = builder.Environment.EnvironmentName
+    });
+});
+
+// Простая главная страница
+app.MapGet("/", () => "🚀 KeysShop запущен! Проверьте /health для статуса");
 
 app.Run();
