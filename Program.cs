@@ -2,6 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
+/*var builder = WebApplication.CreateBuilder(args);
+*/
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDistributedMemoryCache();
@@ -11,6 +15,12 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+// Конфигурация БД
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? "Host=dpg-d5chq9ili9vc73cibbdg-a;Port=5432;Database=keysshopdb;Username=keysshopdb_user;Password=TXFgDCd1SnDxmEOnjTrR6RZCXSLzjkzq;SslMode=Require";
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddControllersWithViews();
 
@@ -19,8 +29,6 @@ builder.Services.AddControllersWithViews();
 /*builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
 */
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? Environment.GetEnvironmentVariable("DATABASE_URL");
 
 // Если строка пустая - используем тестовую
 if (string.IsNullOrEmpty(connectionString))
@@ -46,6 +54,27 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 var app = builder.Build();
+
+// АВТОМАТИЧЕСКОЕ СОЗДАНИЕ БД при запуске
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        // Создаем базу данных если её нет
+        dbContext.Database.EnsureCreated();
+
+        // ИЛИ применить миграции
+        // dbContext.Database.Migrate();
+
+        Console.WriteLine("✅ База данных создана успешно!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Ошибка создания БД: {ex.Message}");
+    }
+}
 
 app.UseSession();
 
