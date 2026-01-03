@@ -1,19 +1,18 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
-COPY ["KeysShop.csproj", "."]
-RUN dotnet restore "KeysShop.csproj"
+﻿FROM node:18-alpine
+
+WORKDIR /app
+
+# Копируем package.json сначала (для кэширования)
+COPY package*.json ./
+
+# Устанавливаем зависимости
+RUN npm ci --only=production
+
+# Копируем остальные файлы
 COPY . .
-RUN dotnet build "KeysShop.csproj" -c Release -o /app/build
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+# Открываем порт
+EXPOSE 3000
 
-FROM build AS publish
-RUN dotnet publish "KeysShop.csproj" -c Release -o /app/publish
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "KeysShop.dll"]
+# Запускаем приложение
+CMD ["node", "index.js"]"]et", "KeysShop.dll"]
