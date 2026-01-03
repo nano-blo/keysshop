@@ -1,12 +1,11 @@
 ﻿FROM node:18-alpine
-
 WORKDIR /app
 
 # Копируем package.json сначала (для кэширования)
 COPY package*.json ./
 
 # Устанавливаем зависимости
-RUN npm ci --only=production
+RUN npm install
 
 # Копируем остальные файлы
 COPY . .
@@ -15,4 +14,4 @@ COPY . .
 EXPOSE 3000
 
 # Запускаем приложение
-CMD ["node", "index.js"]"]et", "KeysShop.dll"]
+CMD ["node", "index.js"]
