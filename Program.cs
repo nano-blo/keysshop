@@ -24,7 +24,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 if (connectionString != null && connectionString.Contains("postgresql://"))
 {
-    // Конвертируем URL из Render в строку подключения .NET
+    // Конвертация URL Render в строку подключения
     var databaseUri = new Uri(connectionString);
     var userInfo = databaseUri.UserInfo.Split(':');
 
@@ -44,6 +44,7 @@ if (connectionString != null && connectionString.Contains("postgresql://"))
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
 var app = builder.Build();
 
 app.UseSession();
